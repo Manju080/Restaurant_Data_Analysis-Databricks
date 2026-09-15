@@ -1,0 +1,77 @@
+# Databricks notebook outputs
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data files (too large for Git)
+*.json
+*.csv
+*.parquet
+*.delta
+*.avro
+*.orc
+data/
+raw_data/
+
+# Credentials and secrets
+.env
+*.key
+*.pem
+*.p12
+secrets/
+credentials/
+
+# MLflow artifacts (use MLflow tracking server instead)
+mlruns/
+mlartifacts/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.ckpt
+models/*.pkl
+
+# Databricks-specific
+.databricks/
+*.dbc
+*.scala
+*.jar
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Large output files
+*.zip
+*.tar
+*.gz
+*.bz2
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/

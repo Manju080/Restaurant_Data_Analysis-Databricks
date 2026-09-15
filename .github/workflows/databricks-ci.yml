@@ -1,0 +1,168 @@
+name: Databricks CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+  DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install pyspark==3.5.0
+        pip install xgboost scikit-learn pandas numpy
+    
+    - name: Run unit tests
+      run: |
+        pytest tests/ -v --cov=. --cov-report=xml --cov-report=term
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  validate-notebooks:
+    name: Validate Notebooks
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install Databricks CLI
+      run: |
+        pip install databricks-cli
+    
+    - name: Validate notebook syntax
+      run: |
+        echo "Checking for syntax errors in notebooks..."
+        for notebook in *.ipynb; do
+          echo "Validating $notebook"
+          python -m json.tool "$notebook" > /dev/null
+        done
+    
+    - name: Check notebook outputs cleared
+      run: |
+        echo "Checking that notebook outputs are cleared..."
+        python -c "
+        import json
+        import sys
+        
+        notebooks = ['01_bronze_yelp.ipynb', '02_Silver_yelp.ipynb', '03_Gold_layer.ipynb', '04_ML_Churn_Prediction.ipynb']
+        failed = False
+        
+        for nb_name in notebooks:
+            with open(nb_name, 'r') as f:
+                nb = json.load(f)
+            
+            cells_with_output = sum(1 for cell in nb.get('cells', []) if cell.get('outputs'))
+            
+            if cells_with_output > 0:
+                print(f'❌ {nb_name} has {cells_with_output} cells with outputs')
+                failed = True
+            else:
+                print(f'✅ {nb_name} outputs cleared')
+        
+        if failed:
+            sys.exit(1)
+        "
+
+  deploy-dev:
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    needs: validate-notebooks
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Databricks CLI
+      run: |
+        pip install databricks-cli
+    
+    - name: Configure Databricks CLI
+      run: |
+        echo "$DATABRICKS_HOST" > ~/.databricks-host
+        echo "$DATABRICKS_TOKEN" > ~/.databricks-token
+        databricks configure --token <<EOF
+        $DATABRICKS_HOST
+        $DATABRICKS_TOKEN
+        EOF
+    
+    - name: Deploy notebooks to Dev workspace
+      run: |
+        databricks workspace import-dir . /Workspace/dev/yelp-churn-pipeline --overwrite
+    
+    - name: Trigger Dev pipeline
+      run: |
+        echo "Dev deployment complete. Run notebooks manually or via job."
+
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate-notebooks
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://your-databricks-instance.cloud.databricks.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Databricks CLI
+      run: |
+        pip install databricks-cli
+    
+    - name: Configure Databricks CLI
+      run: |
+        databricks configure --token <<EOF
+        $DATABRICKS_HOST
+        $DATABRICKS_TOKEN
+        EOF
+    
+    - name: Deploy notebooks to Prod workspace
+      run: |
+        databricks workspace import-dir . /Workspace/prod/yelp-churn-pipeline --overwrite
+    
+    - name: Create/Update Databricks Job
+      run: |
+        echo "Creating or updating production job..."
+        # Use Databricks Jobs API to create/update job
+        # Example: databricks jobs create --json-file job-config.json
+    
+    - name: Send deployment notification
+      if: success()
+      run: |
+        echo "✅ Production deployment successful!"
+        # Add Slack/email notification here if needed
