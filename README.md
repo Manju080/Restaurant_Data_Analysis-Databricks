@@ -96,7 +96,7 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
    LIMIT 100;
    ```
 
-## 🧠 Feature Engineering Highlights
+## Feature Engineering Highlights
 
 ### **94 Total Features** including:
 
@@ -119,7 +119,7 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
 - Engagement consistency
 - User value score
 
-## 📊 Model Performance
+## Model Performance
 
 | Metric | Score |
 |--------|-------|
@@ -135,7 +135,7 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
 - **High Risk**: 73K users (15.2%)
 - **Critical Risk**: 11K users (2.3%)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Platform**: Databricks (Spark Connect, Unity Catalog)
 - **Storage**: Delta Lake (ACID transactions, time travel)
@@ -152,7 +152,7 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
 - `yelp_academic_dataset_checkin.json` (160K records)
 - `yelp_academic_dataset_tip.json` (1.2M tips)
 
-## 📝 Deployment Options
+## Deployment Options
 
 ### **1. Batch Predictions (Scheduled Job)**
 ```python
@@ -215,4 +215,3 @@ This project uses the Yelp Academic Dataset. See [Yelp Dataset License](https://
 
 ---
 
-**Built with ❤️ on Databricks**
