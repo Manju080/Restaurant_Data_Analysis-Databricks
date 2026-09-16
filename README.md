@@ -1,8 +1,8 @@
-# 🎉 Yelp User Churn Prediction
+# Yelp User Churn Prediction
 
 End-to-end machine learning pipeline for predicting user churn on Yelp platform, built on Databricks.
 
-## 📊 Project Overview
+## Project Overview
 
 - **Dataset**: 480K users, 7M reviews, 65K businesses
 - **Model**: XGBoost with 94 engineered features
@@ -13,7 +13,7 @@ End-to-end machine learning pipeline for predicting user churn on Yelp platform,
   - Recall: **0.7647**
 - **High-Risk Users Identified**: 17.5% (84K users)
 
-## 🎯 Business Problem
+## Business Problem
 
 Predict which Yelp users are likely to churn (stop reviewing) to enable:
 - Targeted re-engagement campaigns
@@ -21,7 +21,7 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
 - Early warning system for at-risk users
 - ROI: Retaining users is 5-25x cheaper than acquiring new ones
 
-## 🏗️ Architecture
+## Architecture
 
 ### **Medallion Architecture (Bronze → Silver → Gold)**
 
@@ -59,20 +59,8 @@ Predict which Yelp users are likely to churn (stop reviewing) to enable:
 └──────────────────────────┘
 ```
 
-## 📚 Repository Structure
 
-```
-Restaurant_Data_Analysis-Databricks/
-│
-├── 01_Bronze_layer.py          # Raw data ingestion from JSON
-├── 02_Silver_layer.py          # Data cleaning & validation
-├── 03_Gold_layer.py            # Feature engineering (94 features)
-├── 04_ML_Churn_Prediction.py   # Model training & predictions
-├── README.md                   # This file
-└── .gitignore                  # Exclude data/secrets
-```
-
-## 🚀 Getting Started
+## Getting Started
 
 ### **Prerequisites**
 - Databricks workspace (AWS/Azure/GCP)
@@ -192,32 +180,32 @@ prediction = model.predict(user_features)
 - At-risk user tables
 - Model performance metrics
 
-## 📊 Business Impact
+## Business Impact
 
 - **84K high-risk users identified** for targeted retention
 - **$2.5M potential revenue saved** (assuming $30 LTV per user retained)
 - **Proactive engagement** 3,018 days before predicted churn
 - **Segmented campaigns** by risk tier (Low/Medium/High/Critical)
 
-## 🔗 Key Insights
+## Key Insights
 
 1. **Recency is King**: `days_since_last_review` is the #1 churn predictor
 2. **Elite Users Stick**: Elite members have 40% lower churn
 3. **Engagement Matters**: Users with >10 useful votes are 3x more likely to stay
 4. **First 90 Days Critical**: 60% of churn happens in first 3 months of inactivity
 
-## 👥 Contributors
+## Contributors
 
 - **Data Engineering**: Bronze → Silver → Gold pipeline
 - **Feature Engineering**: 94 features across 6 categories
 - **ML Modeling**: XGBoost with hyperparameter tuning
 - **Deployment**: Batch predictions + MLflow tracking
 
-## 📜 License
+## License
 
 This project uses the Yelp Academic Dataset. See [Yelp Dataset License](https://www.yelp.com/dataset/documentation/license) for terms.
 
-## 🚀 Next Steps
+## Next Steps
 
 - [ ] Deploy as Databricks Job (weekly batch scoring)
 - [ ] Create Lakeview dashboard for stakeholders
